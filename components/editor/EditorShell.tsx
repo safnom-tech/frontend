@@ -1,5 +1,6 @@
 "use client";
 
+import { EditorUnpublishedBanner } from "@/components/editor/EditorUnpublishedBanner";
 import { EditorGettingStartedChecklist } from "@/components/editor/EditorGettingStartedChecklist";
 import { EditorSidePanel } from "@/components/editor/EditorSidePanel";
 import { EditorToolbar } from "@/components/editor/EditorToolbar";
@@ -31,6 +32,7 @@ export function EditorShell() {
   return (
     <div className="flex h-full min-h-0 flex-1 flex-col">
       {!immersivePreview ? <EditorToolbar /> : null}
+      {!immersivePreview ? <EditorUnpublishedBanner /> : null}
       {!immersivePreview ? <EditorGettingStartedChecklist /> : null}
       <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
         <WebsiteCanvas />

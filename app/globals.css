@@ -58,6 +58,16 @@ body {
   font-family: var(--font-geist-sans), system-ui, sans-serif;
 }
 
+/* Published customer sites: one document scrollbar (no html/body height trap). */
+html[data-public-site="true"] {
+  height: auto;
+  overflow-x: clip;
+}
+
+html[data-public-site="true"] body {
+  height: auto;
+}
+
 /* Clickable controls show pointer across the app */
 a[href],
 button:not(:disabled),

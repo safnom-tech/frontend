@@ -39,7 +39,7 @@ export function WebsiteRenderer({
 
   return (
     <div
-      className={`@container/site min-h-0 w-full max-w-full overflow-x-hidden scroll-smooth ${className}`}
+      className={`@container/site w-full max-w-full overflow-x-clip ${className}`}
       style={{
         ...themeCssVars(liveTheme),
         background: "var(--editor-bg)",

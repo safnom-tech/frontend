@@ -340,6 +340,8 @@ export function EditorProvider({
         setPageMetaDirty(false);
       }
       savedSnapshot.current = { sections, theme };
+      const refreshed = await websitesApi.getWebsite(workspaceId, websiteId);
+      setWebsite(refreshed.data);
       setSaveStatus("saved");
     } catch (err) {
       setSaveStatus("error");
@@ -551,6 +553,8 @@ export function EditorProvider({
           setWebsite(siteRes.data);
         }
         savedSnapshot.current = { sections: nextSections, theme };
+        const refreshed = await websitesApi.getWebsite(workspaceId, websiteId);
+        setWebsite(refreshed.data);
         setSaveStatus("saved");
       } catch (err) {
         setSaveStatus("error");

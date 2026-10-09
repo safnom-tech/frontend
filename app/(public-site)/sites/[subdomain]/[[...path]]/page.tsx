@@ -22,7 +22,7 @@ export default async function PublicSitePage({ params }: PageProps) {
   }
 
   return (
-    <main className="min-h-dvh bg-[var(--editor-bg,#fff)]">
+    <main className="bg-[var(--editor-bg,#fff)]">
       <PublicSiteClient data={data} />
     </main>
   );

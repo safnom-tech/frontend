@@ -43,13 +43,22 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       suppressHydrationWarning
       data-theme="light"
-      className={`${geistSans.variable} ${geistMono.variable} ${brandWord.variable} h-full antialiased`}
+      data-public-site={publicSite ? "true" : undefined}
+      className={`${geistSans.variable} ${geistMono.variable} ${brandWord.variable} antialiased ${
+        publicSite ? "scroll-smooth" : "h-full"
+      }`}
     >
       <head>
         <BrandThemeScript />
         <ThemeScript />
       </head>
-      <body className="min-h-full flex flex-col font-sans antialiased text-foreground">
+      <body
+        className={
+          publicSite
+            ? "min-h-dvh overflow-x-clip font-sans antialiased text-foreground"
+            : "min-h-full flex flex-col font-sans antialiased text-foreground"
+        }
+      >
         <Providers publicSite={publicSite}>{children}</Providers>
       </body>
     </html>
