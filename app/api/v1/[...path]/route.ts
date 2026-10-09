@@ -45,13 +45,40 @@ async function proxyRequest(
   const body = hasBody ? await request.arrayBuffer() : undefined;
 
   try {
-    const upstream = await fetch(target, {
+    let upstream = await fetch(target, {
       method: request.method,
       headers,
       body,
       redirect: "manual",
       signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
     });
+
+    if (upstream.status === 502 || upstream.status === 503 || upstream.status === 504) {
+      await new Promise((r) => setTimeout(r, 1500));
+      upstream = await fetch(target, {
+        method: request.method,
+        headers,
+        body,
+        redirect: "manual",
+        signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
+      });
+    }
+
+    const contentType = upstream.headers.get("content-type") ?? "";
+    if (
+      upstream.status >= 502 &&
+      contentType.includes("text/html")
+    ) {
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "API host is down or waking up (Render 502). Open the backend service on Render, wait ~60s, then retry. FRONTEND_URL and BACKEND_URL must both be set.",
+          error: { code: "UPSTREAM_UNAVAILABLE" },
+        },
+        { status: 503 }
+      );
+    }
 
     const responseHeaders = new Headers(upstream.headers);
     responseHeaders.delete("content-encoding");
