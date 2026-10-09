@@ -27,8 +27,8 @@ export function PublicSiteClient({ data }: { data: PublicSiteData }) {
         slug={data.page.slug}
       />
       <WebsiteRenderer
-        theme={data.website.theme}
-        sections={data.page.sections}
+        theme={data.website.theme ?? {}}
+        sections={data.page.sections ?? []}
         revealOnScroll
         inquiryTarget={inquiryTarget}
       />

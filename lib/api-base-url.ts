@@ -42,7 +42,12 @@ export function getApiBaseUrl(): string {
     return configured ?? "/api/v1";
   }
 
-  const backend = process.env.BACKEND_URL?.replace(/\/$/, "");
+  const backend =
+    process.env.BACKEND_URL?.replace(/\/$/, "") ||
+    process.env.NEXT_PUBLIC_BACKEND_API_URL?.replace(/\/api\/v1\/?$/, "").replace(
+      /\/$/,
+      ""
+    );
   if (backend) {
     return `${backend}/api/v1`;
   }

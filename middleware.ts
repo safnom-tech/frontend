@@ -10,7 +10,11 @@ const protectedPaths = ["/profile", "/workspace", "/dashboard"];
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  if (pathname.startsWith("/api/v1/")) {
+  if (
+    pathname.startsWith("/api/v1/") ||
+    pathname.startsWith("/_next/") ||
+    pathname.startsWith("/sites/")
+  ) {
     return NextResponse.next();
   }
 
@@ -44,6 +48,6 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|brand/).*)",
+    "/((?!_next/|favicon.ico|brand/|icon.png|apple-icon.png).*)",
   ],
 };

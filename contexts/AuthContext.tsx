@@ -36,9 +36,15 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({
+  children,
+  skipAuth = false,
+}: {
+  children: ReactNode;
+  skipAuth?: boolean;
+}) {
   const [user, setUser] = useState<PublicUser | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!skipAuth);
 
   const refreshUser = useCallback(async () => {
     try {
@@ -54,7 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (isPublicTenantHost()) {
+    if (skipAuth || isPublicTenantHost()) {
       setUser(null);
       setLoading(false);
       return;
@@ -64,7 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await refreshUser();
       setLoading(false);
     })();
-  }, [refreshUser]);
+  }, [refreshUser, skipAuth]);
 
   const login = useCallback(
     async (email: string, password: string) => {

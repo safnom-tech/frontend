@@ -9,8 +9,10 @@ function sectionVariant(section: PageSection): string {
 }
 
 /** Ensure editor always has usable theme color keys for pickers + CSS vars. */
-export function normalizeWebsiteTheme(theme: WebsiteTheme): WebsiteTheme {
-  const c = theme.colors ?? {};
+export function normalizeWebsiteTheme(
+  theme?: WebsiteTheme | null
+): WebsiteTheme {
+  const c = theme?.colors ?? {};
   return {
     ...theme,
     colors: {

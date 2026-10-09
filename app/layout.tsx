@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { Geist, Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import { Providers } from "@/components/Providers";
 import { BrandThemeScript } from "@/components/BrandThemeScript";
 import { ThemeScript } from "@/components/ThemeScript";
 import { brandLogo } from "@/config/brand";
+import { parseTenantSubdomain } from "@/lib/publish-host";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -32,7 +34,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const host = (await headers()).get("host") ?? "";
+  const publicSite = Boolean(parseTenantSubdomain(host));
+
   return (
     <html
       lang="en"
@@ -45,7 +50,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <ThemeScript />
       </head>
       <body className="min-h-full flex flex-col font-sans antialiased text-foreground">
-        <Providers>{children}</Providers>
+        <Providers publicSite={publicSite}>{children}</Providers>
       </body>
     </html>
   );

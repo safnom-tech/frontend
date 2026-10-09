@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import type { PageSeo } from "@/types/page";
 
 function upsertMeta(attr: "name" | "property", key: string, content: string) {
   let el = document.head.querySelector<HTMLMetaElement>(
@@ -15,17 +14,7 @@ function upsertMeta(attr: "name" | "property", key: string, content: string) {
   el.content = content;
 }
 
-/** Map page SEO fields for document head (preview now; public publish later). */
-export function seoDocumentFields(
-  seo: PageSeo | null | undefined,
-  fallbacks: { title: string; description?: string }
-) {
-  const title = seo?.title?.trim() || fallbacks.title;
-  const description =
-    seo?.metaDescription?.trim() || fallbacks.description || "";
-  const socialImage = seo?.socialImage?.trim() || "";
-  return { title, description, socialImage };
-}
+export { seoDocumentFields } from "@/lib/seo-document-fields";
 
 export function SiteDocumentHead({
   title,

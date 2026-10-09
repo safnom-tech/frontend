@@ -8,15 +8,21 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import { AppToaster } from "@/components/ui/AppToaster";
 import { ConfirmProvider } from "@/components/ui/ConfirmDialog";
 
-export function Providers({ children }: { children: ReactNode }) {
+export function Providers({
+  children,
+  publicSite = false,
+}: {
+  children: ReactNode;
+  publicSite?: boolean;
+}) {
   return (
     <BrandThemeProvider>
       <ThemeProvider>
-        <AuthProvider>
+        <AuthProvider skipAuth={publicSite}>
           <WorkspaceProvider>
             <ConfirmProvider>
               {children}
-              <AppToaster />
+              {publicSite ? null : <AppToaster />}
             </ConfirmProvider>
           </WorkspaceProvider>
         </AuthProvider>

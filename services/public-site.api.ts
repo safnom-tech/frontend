@@ -1,4 +1,4 @@
-import { getApiBaseUrl } from "@/services/api";
+import { getApiBaseUrl } from "@/lib/api-base-url";
 import type { PublicSiteData, PublicSiteResponse } from "@/types/public-site";
 
 export async function fetchPublicSite(
@@ -10,7 +10,7 @@ export async function fetchPublicSite(
 
   try {
     const response = await fetch(url, {
-      next: { revalidate: 30 },
+      cache: "no-store",
     });
 
     if (response.status === 404) {
@@ -18,12 +18,18 @@ export async function fetchPublicSite(
     }
 
     if (!response.ok) {
+      console.error("[public-site] API status", response.status, url);
       return null;
     }
 
     const body = (await response.json()) as PublicSiteResponse;
-    return body.data;
-  } catch {
+    const data = body?.data;
+    if (!data?.website || !data.page) {
+      return null;
+    }
+    return data;
+  } catch (err) {
+    console.error("[public-site] fetch failed", url, err);
     return null;
   }
 }

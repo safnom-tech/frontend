@@ -14,8 +14,8 @@ import type { ContactInquiryTarget } from "@/types/inquiry";
 import type { PageSection } from "@/types/page";
 import type { WebsiteTheme } from "@/types/website";
 
-function sortSections(sections: PageSection[]): PageSection[] {
-  return [...sections].sort((a, b) => a.order - b.order);
+function sortSections(sections?: PageSection[] | null): PageSection[] {
+  return [...(sections ?? [])].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 }
 
 export function WebsiteRenderer({
