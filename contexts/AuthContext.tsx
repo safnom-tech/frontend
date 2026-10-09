@@ -10,6 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import { ApiClientError } from "@/lib/api-client";
+import { isPublicTenantHost } from "@/lib/public-tenant-host";
 import {
   getFirebaseAuth,
   isFirebaseClientConfigured,
@@ -53,6 +54,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    if (isPublicTenantHost()) {
+      setUser(null);
+      setLoading(false);
+      return;
+    }
     void (async () => {
       setLoading(true);
       await refreshUser();

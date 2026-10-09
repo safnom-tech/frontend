@@ -1,4 +1,5 @@
 import { ApiClientError } from "@/lib/api-client";
+import { isPublicTenantHost } from "@/lib/public-tenant-host";
 import { getApiBaseUrl } from "@/services/api";
 import type {
   MediaDeleteResponse,
@@ -86,10 +87,34 @@ export async function deleteMedia(
   return parseResponse<MediaDeleteResponse>(response);
 }
 
+const WORKSPACE_MEDIA_CONTENT =
+  /\/workspaces\/[^/]+\/media\/([^/]+)\/content\/?$/;
+
+function rewriteToPublicMediaUrl(resolved: string): string {
+  const match = resolved.match(WORKSPACE_MEDIA_CONTENT);
+  if (!match) return resolved;
+  const mediaId = match[1];
+  return `${getApiBaseUrl().replace(/\/$/, "")}/public/media/${mediaId}/content`;
+}
+
 /** Resolve API-relative url for img src (same-origin via Next rewrite). */
-export function mediaUrlForDisplay(url: string): string {
-  if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("/")) {
-    return url;
+export function mediaUrlForDisplay(
+  url: string,
+  options?: { publicSite?: boolean }
+): string {
+  let resolved: string;
+  if (url.startsWith("http://") || url.startsWith("https://")) {
+    resolved = url;
+  } else if (url.startsWith("/")) {
+    resolved = url;
+  } else {
+    resolved = `${getApiBaseUrl().replace(/\/$/, "")}/${url.replace(/^\//, "")}`;
   }
-  return `${getApiBaseUrl().replace(/\/$/, "")}/${url.replace(/^\//, "")}`;
+
+  const usePublic =
+    options?.publicSite ?? isPublicTenantHost();
+  if (usePublic) {
+    return rewriteToPublicMediaUrl(resolved);
+  }
+  return resolved;
 }
