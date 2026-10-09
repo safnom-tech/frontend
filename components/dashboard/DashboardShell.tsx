@@ -26,7 +26,7 @@ const navItems = [
   { href: "/dashboard/workspace", label: "Workspace", Icon: IconWorkspace },
   {
     href: "/dashboard/domains",
-    label: "Domains (soon)",
+    label: "Domains",
     Icon: IconDomains,
   },
 ];

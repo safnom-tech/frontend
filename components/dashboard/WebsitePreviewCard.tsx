@@ -7,6 +7,8 @@ import { WebsiteStatusBadge } from "@/components/dashboard/WebsiteStatusBadge";
 import { Button } from "@/components/ui/Button";
 import { mergeWebsiteTheme } from "@/components/editor/sections/sectionStyles";
 import { ApiClientError } from "@/lib/api-client";
+import { publishBaseDomain } from "@/lib/publish-host";
+import { buildLiveSiteUrl } from "@/lib/subdomain";
 import * as previewApi from "@/services/preview.api";
 import type { WebsitePreviewData } from "@/types/preview";
 import type { Website } from "@/types/website";
@@ -58,6 +60,11 @@ export function WebsitePreviewCard({
   );
 
   const sections = preview?.page.sections ?? [];
+  const platform = publishBaseDomain();
+  const liveLabel =
+    website.status === "PUBLISHED" && website.subdomain
+      ? buildLiveSiteUrl(website.subdomain, platform)
+      : null;
 
   return (
     <li className="dashboard-panel flex flex-col overflow-hidden">
@@ -107,10 +114,34 @@ export function WebsitePreviewCard({
         </div>
       </Link>
 
+      <div className="border-t border-card-border px-3 py-2">
+        {liveLabel ? (
+          <p className="truncate font-mono text-[10px] text-brand">{liveLabel}</p>
+        ) : (
+          <p className="text-[10px] text-muted">
+            No public subdomain yet — open Go live to choose one.
+          </p>
+        )}
+      </div>
+
       <div className="flex flex-wrap gap-2 p-3">
         <Link
+          href={`/dashboard/websites/${website.id}/live`}
+          className={
+            website.status !== "PUBLISHED"
+              ? "btn-primary rounded-lg px-3 py-1.5 text-xs"
+              : "btn-secondary rounded-lg px-3 py-1.5 text-xs"
+          }
+        >
+          Live site
+        </Link>
+        <Link
           href={`/dashboard/websites/${website.id}/editor`}
-          className="btn-primary rounded-lg px-3 py-1.5 text-xs"
+          className={
+            website.status === "PUBLISHED"
+              ? "btn-primary rounded-lg px-3 py-1.5 text-xs"
+              : "btn-secondary rounded-lg px-3 py-1.5 text-xs"
+          }
         >
           Open editor
         </Link>

@@ -74,6 +74,12 @@ export function EditorToolbar() {
       </div>
       <div className="flex flex-wrap items-center justify-end gap-2">
         <Link
+          href={`/dashboard/websites/${websiteId}/live`}
+          className="btn-primary rounded-lg px-2.5 py-1.5 text-xs"
+        >
+          Live site
+        </Link>
+        <Link
           href={sitePreviewHref}
           className="btn-secondary rounded-lg px-2.5 py-1.5 text-xs"
         >
