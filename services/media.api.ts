@@ -97,22 +97,52 @@ function rewriteToPublicMediaUrl(resolved: string): string {
   return `${getApiBaseUrl().replace(/\/$/, "")}/public/media/${mediaId}/content`;
 }
 
+/** Turn stored media paths into absolute API URLs (backend on live sites). */
+function resolveStoredMediaUrl(url: string): string {
+  const trimmed = url.trim();
+  if (!trimmed) return trimmed;
+
+  let suffix: string | null = null;
+
+  if (/^https?:\/\//i.test(trimmed)) {
+    try {
+      const parsed = new URL(trimmed);
+      const apiIdx = parsed.pathname.indexOf("/api/v1");
+      if (apiIdx >= 0) {
+        suffix = parsed.pathname.slice(apiIdx + "/api/v1".length);
+      } else if (parsed.pathname.includes("/workspaces/")) {
+        suffix = parsed.pathname;
+      } else {
+        return trimmed;
+      }
+    } catch {
+      return trimmed;
+    }
+  } else if (trimmed.startsWith("/api/v1")) {
+    suffix = trimmed.slice("/api/v1".length);
+  } else if (trimmed.startsWith("/workspaces/")) {
+    suffix = trimmed;
+  } else if (!trimmed.startsWith("/")) {
+    suffix = `/${trimmed.replace(/^\//, "")}`;
+  } else if (trimmed.startsWith("/")) {
+    return trimmed;
+  }
+
+  if (suffix !== null) {
+    const base = getApiBaseUrl().replace(/\/$/, "");
+    return `${base}${suffix.startsWith("/") ? suffix : `/${suffix}`}`;
+  }
+
+  return `${getApiBaseUrl().replace(/\/$/, "")}/${trimmed.replace(/^\//, "")}`;
+}
+
 /** Resolve API-relative url for img src (same-origin via Next rewrite). */
 export function mediaUrlForDisplay(
   url: string,
   options?: { publicSite?: boolean }
 ): string {
-  let resolved: string;
-  if (url.startsWith("http://") || url.startsWith("https://")) {
-    resolved = url;
-  } else if (url.startsWith("/")) {
-    resolved = url;
-  } else {
-    resolved = `${getApiBaseUrl().replace(/\/$/, "")}/${url.replace(/^\//, "")}`;
-  }
-
-  const usePublic =
-    options?.publicSite ?? isPublicTenantHost();
+  const resolved = resolveStoredMediaUrl(url);
+  const usePublic = options?.publicSite ?? isPublicTenantHost();
   if (usePublic) {
     return rewriteToPublicMediaUrl(resolved);
   }
