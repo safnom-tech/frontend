@@ -6,6 +6,7 @@ import { ScaledWebsitePreview } from "@/components/dashboard/ScaledWebsitePrevie
 import { WebsiteStatusBadge } from "@/components/dashboard/WebsiteStatusBadge";
 import { Button } from "@/components/ui/Button";
 import { mergeWebsiteTheme } from "@/components/editor/sections/sectionStyles";
+import { ApiClientError } from "@/lib/api-client";
 import * as previewApi from "@/services/preview.api";
 import type { WebsitePreviewData } from "@/types/preview";
 import type { Website } from "@/types/website";
@@ -23,17 +24,24 @@ export function WebsitePreviewCard({
   const [preview, setPreview] = useState<WebsitePreviewData | null>(null);
   const [loading, setLoading] = useState(true);
   const [hovering, setHovering] = useState(false);
+  const [previewHint, setPreviewHint] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
+    setPreviewHint(null);
     void previewApi
       .getWebsitePreview(workspaceId, website.id)
       .then((res) => {
         if (!cancelled) setPreview(res.data);
       })
-      .catch(() => {
-        if (!cancelled) setPreview(null);
+      .catch((err) => {
+        if (!cancelled) {
+          setPreview(null);
+          if (err instanceof ApiClientError && err.code === "PAGE_NOT_FOUND") {
+            setPreviewHint("Add a page in the editor to see a preview.");
+          }
+        }
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -83,7 +91,9 @@ export function WebsitePreviewCard({
             }}
           >
             <p className="text-sm font-semibold">{website.name}</p>
-            <p className="text-[10px] text-muted">Preview unavailable</p>
+            <p className="text-[10px] text-muted">
+              {previewHint ?? "Preview unavailable"}
+            </p>
           </div>
         )}
 

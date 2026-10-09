@@ -4,25 +4,9 @@ import { useEffect, useMemo, useState } from "react";
 import { ScaledWebsitePreview } from "@/components/dashboard/ScaledWebsitePreview";
 import { mergeWebsiteTheme } from "@/components/editor/sections/sectionStyles";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
-import * as previewApi from "@/services/preview.api";
-import * as templatesApi from "@/services/templates.api";
+import { loadTemplateThemePreview } from "@/lib/load-template-theme-preview";
 import type { TemplateThemePreviewData } from "@/types/preview";
-import type { PageSection, SectionType } from "@/types/page";
-import type { TemplateDetail } from "@/types/template";
 import type { WebsiteTheme } from "@/types/website";
-
-function toSectionsFromTemplate(
-  page: TemplateDetail["pages"][number] | undefined
-): PageSection[] {
-  if (!page) return [];
-  return page.sections.map((section, index) => ({
-    id: `tpl-card-${index}`,
-    type: section.type as SectionType,
-    order: section.order,
-    data: section.data,
-    settings: section.settings,
-  }));
-}
 
 /** Live scaled template render — hover slowly scrolls to reveal the full page. */
 export function TemplateLivePreview({
@@ -49,36 +33,13 @@ export function TemplateLivePreview({
     let cancelled = false;
     setLoading(true);
 
-    const load = currentWorkspace
-      ? previewApi.getTemplateThemePreview(currentWorkspace.id, templateId)
-      : templatesApi.getTemplate(templateId).then((res) => {
-          const t = res.data;
-          const home =
-            t.pages.find((p) => p.slug === "home") ?? t.pages[0];
-          const fallback: TemplateThemePreviewData = {
-            template: {
-              id: t.id,
-              name: t.name,
-              category: t.category,
-              description: t.description,
-            },
-            theme: t.theme as WebsiteTheme,
-            businessProfileApplied: false,
-            businessProfile: {},
-            page: {
-              name: home?.name ?? "Home",
-              slug: home?.slug ?? "home",
-              pageType: home?.pageType ?? "HOME",
-              seo: { title: null, metaDescription: null, socialImage: null },
-              sections: toSectionsFromTemplate(home),
-            },
-          };
-          return { data: fallback };
-        });
-
-    void load
-      .then((res) => {
-        if (!cancelled) setPreview(res.data);
+    void loadTemplateThemePreview(
+      currentWorkspace?.id,
+      templateId,
+      currentWorkspace?.businessProfile
+    )
+      .then((data) => {
+        if (!cancelled) setPreview(data);
       })
       .catch(() => {
         if (!cancelled) setPreview(null);

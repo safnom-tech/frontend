@@ -20,7 +20,7 @@ import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { ApiClientError } from "@/lib/api-client";
 import { createWebsiteFromTemplateAndOpenEditor } from "@/lib/createWebsiteFromTemplate";
 import { hasBusinessName } from "@/types/business-profile";
-import * as previewApi from "@/services/preview.api";
+import { loadTemplateThemePreview } from "@/lib/load-template-theme-preview";
 import type { EditorViewport } from "@/types/editor";
 import type { TemplateThemePreviewData } from "@/types/preview";
 
@@ -47,10 +47,13 @@ export default function ThemePreviewPage() {
     let cancelled = false;
     setLoading(true);
     setError(null);
-    void previewApi
-      .getTemplateThemePreview(currentWorkspace.id, templateId)
-      .then((res) => {
-        if (!cancelled) setPreview(res.data);
+    void loadTemplateThemePreview(
+      currentWorkspace.id,
+      templateId,
+      currentWorkspace.businessProfile
+    )
+      .then((data) => {
+        if (!cancelled) setPreview(data);
       })
       .catch((err) => {
         if (!cancelled) {
