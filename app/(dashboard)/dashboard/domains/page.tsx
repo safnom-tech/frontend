@@ -72,12 +72,24 @@ export default function DashboardDomainsPage() {
             ). You can view and change subdomains anytime below.
           </p>
         </div>
-        <div className="px-5 py-3 text-xs text-muted">
-          Custom domains (your own .com) are planned —{" "}
-          <Link href="/domains" className="font-medium text-brand hover:underline">
-            learn more
-          </Link>
-          .
+        <div className="space-y-2 px-5 py-3 text-xs leading-relaxed text-muted">
+          <p>
+            Subdomains like <span className="font-mono">apexflow.{baseDomain}</span>{" "}
+            are created in SafNom when you go live — not as separate rows in
+            GoDaddy Forwarding.
+          </p>
+          <p>
+            GoDaddy needs a one-time wildcard DNS record (
+            <span className="font-mono">*</span>) pointing to your frontend host,
+            plus <span className="font-mono">*.{baseDomain}</span> on Render.
+          </p>
+          <p>
+            Custom domains (your own .com) are planned —{" "}
+            <Link href="/domains" className="font-medium text-brand hover:underline">
+              learn more
+            </Link>
+            .
+          </p>
         </div>
       </section>
 

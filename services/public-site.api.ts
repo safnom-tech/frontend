@@ -8,18 +8,22 @@ export async function fetchPublicSite(
   const qs = pageSlug ? `?pageSlug=${encodeURIComponent(pageSlug)}` : "";
   const url = `${getApiBaseUrl()}/public/sites/${encodeURIComponent(subdomain)}${qs}`;
 
-  const response = await fetch(url, {
-    next: { revalidate: 30 },
-  });
+  try {
+    const response = await fetch(url, {
+      next: { revalidate: 30 },
+    });
 
-  if (response.status === 404) {
+    if (response.status === 404) {
+      return null;
+    }
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const body = (await response.json()) as PublicSiteResponse;
+    return body.data;
+  } catch {
     return null;
   }
-
-  if (!response.ok) {
-    throw new Error(`Failed to load public site (${response.status})`);
-  }
-
-  const body = (await response.json()) as PublicSiteResponse;
-  return body.data;
 }

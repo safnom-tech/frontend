@@ -7,6 +7,7 @@ import { FieldLabel, Input } from "@/components/ui/Input";
 import { WebsiteStatusBadge } from "@/components/dashboard/WebsiteStatusBadge";
 import {
   buildLiveSiteUrl,
+  resolveLiveSiteHref,
   validateSubdomainFormat,
 } from "@/lib/subdomain";
 import type { WebsiteStatus } from "@/types/website";
@@ -62,6 +63,11 @@ export function WebsiteLiveSiteSection({
   const subdomainChanged =
     validation.ok &&
     (committedSubdomain ?? "") !== validation.normalized;
+  const liveHref = resolveLiveSiteHref(
+    publicUrl,
+    committedSubdomain ?? (validation.ok ? validation.normalized : null),
+    baseDomain
+  );
 
   return (
     <section
@@ -103,18 +109,18 @@ export function WebsiteLiveSiteSection({
             </Alert>
           ) : null}
 
-          {isPublished && publicUrl ? (
+          {isPublished && liveHref ? (
             <div className="rounded-xl border border-emerald-500/25 bg-emerald-500/[0.06] px-4 py-3">
               <p className="text-xs font-medium uppercase tracking-wide text-emerald-800 dark:text-emerald-300">
                 Currently live
               </p>
               <a
-                href={publicUrl}
+                href={liveHref}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-1 inline-block break-all font-mono text-sm font-medium text-brand hover:underline"
               >
-                {publicUrl.replace(/^https?:\/\//, "")}
+                {liveHref.replace(/^https?:\/\//, "")}
               </a>
             </div>
           ) : committedSubdomain && validation.ok ? (

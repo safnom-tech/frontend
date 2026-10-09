@@ -1,12 +1,19 @@
 import type { ApiErrorResponse, HealthResponse } from "@/types/api";
 
 function getApiBaseUrl(): string {
-  const base = process.env.NEXT_PUBLIC_API_URL;
-  if (base) {
-    return base.replace(/\/$/, "");
-  }
+  const configured = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "");
+
   if (typeof window !== "undefined") {
-    return "/api/v1";
+    return configured ?? "/api/v1";
+  }
+
+  // Server Components: Node fetch cannot use `/api/v1` on tenant hosts (e.g. shop.safnom.site).
+  const backend = process.env.BACKEND_URL?.replace(/\/$/, "");
+  if (backend) {
+    return `${backend}/api/v1`;
+  }
+  if (configured?.startsWith("http")) {
+    return configured;
   }
   return "http://localhost:8080/api/v1";
 }

@@ -55,3 +55,27 @@ export function buildLiveSiteUrl(
   if (!check.ok) return "";
   return `https://${check.normalized}.${platformDomain.replace(/^\./, "")}`;
 }
+
+/** Ensures absolute https URL (fixes legacy API values like `https//host`). */
+export function normalizePublicSiteUrl(url: string | null | undefined): string | null {
+  if (!url?.trim()) return null;
+  let fixed = url.trim();
+  fixed = fixed.replace(/^https\/\//i, "https://").replace(/^http\/\//i, "http://");
+  if (!/^https?:\/\//i.test(fixed)) {
+    fixed = `https://${fixed.replace(/^\/+/, "")}`;
+  }
+  return fixed;
+}
+
+export function resolveLiveSiteHref(
+  publicUrl: string | null | undefined,
+  subdomain: string | null | undefined,
+  platformDomain: string
+): string | null {
+  const fromApi = normalizePublicSiteUrl(publicUrl);
+  if (fromApi) return fromApi;
+  const sub = subdomain?.trim();
+  if (!sub) return null;
+  const built = buildLiveSiteUrl(sub, platformDomain);
+  return built || null;
+}
