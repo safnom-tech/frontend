@@ -9,6 +9,11 @@ const protectedPaths = ["/profile", "/workspace", "/dashboard"];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  if (pathname.startsWith("/api/v1/")) {
+    return NextResponse.next();
+  }
+
   const host = request.headers.get("host") ?? "";
   const tenantSubdomain = parseTenantSubdomain(host);
 
