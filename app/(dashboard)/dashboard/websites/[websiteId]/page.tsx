@@ -113,7 +113,7 @@ export default function WebsiteDetailPage() {
       setPublicUrl(res.data.publicUrl);
       setHasUnpublishedChanges(false);
       await load();
-      notify.success("Website published.");
+      notify.success("Website is live.");
     } catch (err) {
       notifyApiError(err, "Publish failed");
     } finally {
@@ -190,6 +190,18 @@ export default function WebsiteDetailPage() {
             />
 
             <div className="dashboard-panel mb-6 space-y-3 p-5">
+              <p className="text-sm text-muted">
+                <strong className="font-medium text-foreground">Go live:</strong>{" "}
+                choose a subdomain below, then click{" "}
+                <strong className="font-medium text-foreground">Go live</strong>.
+                SafNom assigns{" "}
+                <span className="font-mono text-xs">
+                  yourname.{baseDomain}
+                </span>{" "}
+                (no separate DNS per site — wildcard on{" "}
+                <span className="font-mono text-xs">{baseDomain}</span> must
+                point to this app).
+              </p>
               <dl className="space-y-2 text-sm">
                 <div className="flex flex-wrap gap-x-2">
                   <dt className="text-muted">Website ID:</dt>
@@ -259,7 +271,7 @@ export default function WebsiteDetailPage() {
                   disabled={publishing}
                   onClick={() => void onPublish()}
                 >
-                  {publishing ? "Publishing…" : "Publish"}
+                  {publishing ? "Going live…" : "Go live"}
                 </Button>
               )}
               {website.status === "PUBLISHED" ? (
