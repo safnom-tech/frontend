@@ -29,6 +29,7 @@ import {
   type FieldContentType,
 } from "@/lib/fieldContentAi";
 import { inferFieldContentType } from "@/lib/inferFieldContentType";
+import { usePublicSiteMedia } from "@/contexts/PublicSiteMediaContext";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { ApiClientError } from "@/lib/api-client";
 import * as mediaApi from "@/services/media.api";
@@ -324,6 +325,7 @@ export function InlineImage({
 }) {
   const ctx = useSectionInlineEdit();
   const { currentWorkspace } = useWorkspace();
+  const publicSite = usePublicSiteMedia();
   const fileRef = useRef<HTMLInputElement>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -335,7 +337,9 @@ export function InlineImage({
   }
   const url = fieldStr(ctx.data, urlField);
   const alt = fieldStr(ctx.data, altField);
-  const displayUrl = url ? mediaApi.mediaUrlForDisplay(url) : "";
+  const displayUrl = url
+    ? mediaApi.mediaUrlForDisplay(url, { publicSite })
+    : "";
 
   if (!ctx.enabled) {
     if (displayUrl) {
@@ -567,6 +571,7 @@ export function InlineGallerySlot({
 }) {
   const ctx = useSectionInlineEdit();
   const { currentWorkspace } = useWorkspace();
+  const publicSite = usePublicSiteMedia();
   const fileRef = useRef<HTMLInputElement>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -580,7 +585,9 @@ export function InlineGallerySlot({
       : { url: "", alt: "" };
   const url = typeof row.url === "string" ? row.url : "";
   const alt = typeof row.alt === "string" ? row.alt : "";
-  const displayUrl = url ? mediaApi.mediaUrlForDisplay(url) : "";
+  const displayUrl = url
+    ? mediaApi.mediaUrlForDisplay(url, { publicSite })
+    : "";
 
   if (!ctx.enabled) {
     if (displayUrl) {

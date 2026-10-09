@@ -5,6 +5,7 @@ import {
   seoDocumentFields,
 } from "@/components/site/SiteDocumentHead";
 import { WebsiteRenderer } from "@/components/site/WebsiteRenderer";
+import { PublicSiteMediaContext } from "@/contexts/PublicSiteMediaContext";
 import type { PublicSiteData } from "@/types/public-site";
 
 export function PublicSiteClient({ data }: { data: PublicSiteData }) {
@@ -18,7 +19,7 @@ export function PublicSiteClient({ data }: { data: PublicSiteData }) {
     : null;
 
   return (
-    <>
+    <PublicSiteMediaContext.Provider value={true}>
       <SiteDocumentHead
         title={seo.title}
         description={seo.description}
@@ -31,6 +32,6 @@ export function PublicSiteClient({ data }: { data: PublicSiteData }) {
         revealOnScroll
         inquiryTarget={inquiryTarget}
       />
-    </>
+    </PublicSiteMediaContext.Provider>
   );
 }

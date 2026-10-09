@@ -27,6 +27,7 @@ import {
 import { useSectionInlineEdit } from "@/components/editor/inline/SectionInlineEditContext";
 import { LogisticsServiceIcon } from "@/components/site/LogisticsIcons";
 import { ContactInquiryForm } from "@/components/site/ContactInquiryForm";
+import { usePublicSiteMedia } from "@/contexts/PublicSiteMediaContext";
 import { mediaUrlForDisplay } from "@/services/media.api";
 import type { ContactInquiryTarget } from "@/types/inquiry";
 import type { PageSection } from "@/types/page";
@@ -45,7 +46,10 @@ function LogisticsCardImage({
   alt: string;
   fallback?: string;
 }) {
-  const initial = src?.trim() ? mediaUrlForDisplay(src) : fallback;
+  const publicSite = usePublicSiteMedia();
+  const initial = src?.trim()
+    ? mediaUrlForDisplay(src, { publicSite })
+    : fallback;
   return (
     <div className="mb-3 aspect-[16/10] overflow-hidden bg-neutral-200 grayscale">
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -490,6 +494,7 @@ function heroRadiusClass(radius: string | undefined): string {
 }
 
 export function HeroSectionView({ section, style, themeVars }: ViewProps) {
+  const publicSite = usePublicSiteMedia();
   const d = section.data;
   const s = section.settings as {
     layout?: string;
@@ -577,7 +582,7 @@ export function HeroSectionView({ section, style, themeVars }: ViewProps) {
             {imageUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
-                src={mediaUrlForDisplay(imageUrl)}
+                src={mediaUrlForDisplay(imageUrl, { publicSite })}
                 alt={str(d.imageAlt, "Hero campaign")}
                 className="max-h-[520px] w-auto object-contain drop-shadow-2xl"
               />
@@ -649,7 +654,7 @@ export function HeroSectionView({ section, style, themeVars }: ViewProps) {
         {imageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={mediaUrlForDisplay(imageUrl)}
+            src={mediaUrlForDisplay(imageUrl, { publicSite })}
             alt={str(d.imageAlt, "Campaign")}
             className="h-full min-h-[320px] w-full object-cover"
           />
@@ -838,6 +843,7 @@ export function ListSectionView({
   fallbackHeading,
   pageSections = [],
 }: ViewProps & { fallbackHeading: string }) {
+  const publicSite = usePublicSiteMedia();
   const d = section.data;
   const variant = variantOf(section);
 
@@ -1164,7 +1170,7 @@ export function ListSectionView({
                 {card.imageUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
-                    src={mediaUrlForDisplay(card.imageUrl)}
+                    src={mediaUrlForDisplay(card.imageUrl, { publicSite })}
                     alt={card.title}
                     className="h-full w-full object-cover"
                   />
